@@ -4,12 +4,14 @@ import Registry from './Registry';
 
 function _mixedArray(fn) {
   return function(arr) {
+    console.log("MIXED arr of tags " + arr);
     return types.maybeNull(types.array(fn(arr)));
   };
 }
 
 function _oneOf(lookup, err) {
   return function(arr) {
+    console.log("ONE OF arr of tags " + arr);
     return types.union({
       dispatcher: sn => {
         if (arr.find(val => sn.type === val)) {

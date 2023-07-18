@@ -7,6 +7,10 @@ interface ObjectTagViewProps {
   style?: CSSProperties;
 }
 
+// problem is this affects any object with lsf-object tag
+const fixedSize : CSSProperties = {
+  width: '75%'
+}
 /**
  * Object Tag Component
  */
@@ -23,7 +27,7 @@ const ObjectTagView: FC<ObjectTagViewProps> = ({
     <div
       className={['lsf-object', className].join(' ')}
       data-needs-update={item._needsUpdate}
-      style={style}
+      style={fixedSize}
       {...moreProps}
     >
       {children}

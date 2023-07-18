@@ -324,7 +324,6 @@ class TextHighlight extends Component {
       lastRange = range;
 
       // console.log(this.props.text[lastRange.start], this.props.text[lastRange.end])
-
       /**
        * We put the first range node on the array
        */

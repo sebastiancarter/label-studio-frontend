@@ -632,7 +632,6 @@ export default types
       const as = self.annotationStore;
 
       as.afterReset?.();
-
       if (!as.initialized) {
         as.initRoot(self.config);
       }
@@ -731,11 +730,9 @@ export default types
       await annotation.saveDraft({ was_postponed: true });
       await getEnv(self).events.invoke('nextTask');
     }
-
     function nextTask() {
       if (self.canGoNextTask) {
         const { taskId, annotationId } = self.taskHistory[self.taskHistory.findIndex((x) => x.taskId === self.task.id) + 1];
-
         getEnv(self).events.invoke('nextTask', taskId, annotationId);
       }
     }
@@ -745,7 +742,6 @@ export default types
 
       if (self.canGoPrevTask || shouldGoBack) {
         const { taskId, annotationId } = self.taskHistory[length];
-
         getEnv(self).events.invoke('prevTask', taskId, annotationId);
       }
     }

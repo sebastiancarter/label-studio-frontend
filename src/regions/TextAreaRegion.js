@@ -29,7 +29,7 @@ const Model = types
   }))
   .views(self => ({
     get parent() {
-      return getParentOfType(self, TextAreaModel);
+      return getParentOfType(self, TextAreaModel); //
     },
     getRegionElement() {
       return document.querySelector(`#TextAreaRegion-${self.id}`);
@@ -114,6 +114,7 @@ const HtxTextAreaRegionView = ({ item, onFocus }) => {
 
   return (
     <div {...divAttrs} className={styles.row} data-testid="textarea-region">
+      <div testid="htxtextregion"></div>
       <HtxTextBox
         isEditable={editable}
         isDeleteable={deleteable}

@@ -6,6 +6,7 @@ import SpanTextMixin from '../mixins/SpanText';
 import Utils from '../utils';
 import { ParagraphLabelsModel } from '../tags/control/ParagraphLabels';
 import { TextAreaModel } from '../tags/control/TextArea/TextArea';
+import {TextArea2Model} from "../tags/control/TextArea/TextArea2";
 import { ChoicesModel } from '../tags/control/Choices';
 import { RatingModel } from '../tags/control/Rating';
 import { ParagraphsModel } from '../tags/object/Paragraphs';

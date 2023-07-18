@@ -2,6 +2,7 @@ import React, { createRef, forwardRef, useCallback, useEffect, useMemo, useRef, 
 import Button from 'antd/lib/button/index';
 import Form from 'antd/lib/form/index';
 import Input from 'antd/lib/input/index';
+
 import { observer } from 'mobx-react';
 import { destroy, isAlive, types } from 'mobx-state-tree';
 
@@ -30,6 +31,7 @@ import {
 import { ReadOnlyControlMixin } from '../../../mixins/ReadOnlyMixin';
 import ClassificationBase from '../ClassificationBase';
 import PerItemMixin from '../../../mixins/PerItem';
+
 
 const { TextArea } = Input;
 
@@ -94,6 +96,7 @@ const TagAttrs = types.model({
   showsubmitbutton: types.maybeNull(types.boolean),
   placeholder: types.maybeNull(types.string),
   maxsubmissions: types.maybeNull(types.string),
+  htmldisplaymode: types.maybeNull(types.string),
   editable: types.optional(types.boolean, false),
   transcription: false,
   ...(isFF(FF_LSDV_4659) ? {
@@ -106,7 +109,7 @@ const Model = types.model({
   regions: types.array(TextAreaRegionModel),
 
   _value: types.optional(types.string, ''),
-  children: Types.unionArray(['shortcut']),
+  children: Types.unionArray(['shortcut', 'textarea']), // Added textarea as children type
 
 }).volatile(() => {
   return {
@@ -175,7 +178,7 @@ const Model = types.model({
 
   return {
     getSerializableValue() {
-      const texts = self.regions.map(s => s._value);
+      const texts = self.regions.map(s => s._value); // added plus 1
 
       if (texts.length === 0) return;
 
@@ -233,7 +236,46 @@ const Model = types.model({
       self.updateResult();
     },
 
+    validate_against_all(array) {
+      let valueSum = 0
+      let maxSum = 100
+      console.log("validate against others called! with array " + JSON.stringify(array));
+      array.forEach(function(value){
+        try {
+          let textVal = Number(value.text);
+          valueSum += textVal
+          console.log('value text ' + value.text);
+        }
+        catch(TypeError){
+            console.log('No value found');
+        }
+      }
+      );
+      // No alert because it will flag at least 8 times :(
+      if (valueSum === maxSum) {
+        return true;
+      }
+      else{
+        alert('percentage is not equal to 100 check values');
+        console.log('valueSum not equal to ' + maxSum + ' current value: ' + valueSum);
+        return false;
+      }
+    },
+
     validateValue(text) {
+      console.log('item value ' + text);
+      let checkPercent =  Number(text);
+      console.log('checkPercent '+ checkPercent)
+      if (isNaN(checkPercent)){
+        alert("Only submit numeric values.");
+        return false;}
+      if (checkPercent > 100){
+        alert("Individual percent exceeds 100%.");
+        return false;}
+      if (checkPercent < 0){
+        alert("Only enter positive values.");
+        return false;}
+
       if (isFF(FF_LSDV_4659) && self.skipduplicates && self.hasResult(text)) {
         self.uniqueModal();
         return false;
@@ -322,6 +364,7 @@ const TextAreaModel = types.compose(
   Model,
 );
 
+let totalPercentage = 0;
 const HtxTextArea = observer(({ item }) => {
   const rows = parseInt(item.rows);
   const onFocus = useCallback((ev, model) => {
@@ -371,51 +414,127 @@ const HtxTextArea = observer(({ item }) => {
 
   const showAddButton = !item.isReadOnly() && (item.showsubmitbutton ?? rows !== 1);
   const itemStyle = {};
-
   if (showAddButton) itemStyle['marginBottom'] = 0;
 
-  visibleStyle['marginTop'] = '4px';
+  visibleStyle['margin'] = '30px';
+  visibleStyle['float'] = "left";
+  itemStyle['width'] = '50px';
+  if(item.htmldisplaymode === "createTable"){
+    return (
 
-  return (item.displaymode === PER_REGION_MODES.TAG ? (
-    <div className='lsf-text-area' style={visibleStyle}>
-      {Tree.renderChildren(item, item.annotation)}
+    <table>
+          <tbody>
+           <tr>
+              {Tree.renderChildren(item, item.annotation)}
+           </tr>
+          </tbody>
+    </table>)
 
-      {item.showSubmit && (
-        <Form
-          onFinish={() => {
-            if (item.allowsubmit && item._value && !item.annotation.isReadOnly()) {
-              item.addText(item._value);
-              item.setValue('');
-            }
+  }
+  else if(item.htmldisplaymode === "rowValue")
+  {
+    return (item.displaymode === PER_REGION_MODES.TAG ? (
+    <td>
+      <div className='lsf-text-area2' style={visibleStyle}>
 
-            return false;
-          }}
-        >
-          <Form.Item style={itemStyle}>
-            {rows === 1
+        {Tree.renderChildren(item, item.annotation)}
+        <Form>
+         <b>
+          {item.name}
+         </b>
+        </Form>
+        {item.showSubmit && (
+          <Form
+            onFinish={() => {
+              if (item.allowsubmit && item._value && !item.annotation.isReadOnly()) {
+                // console.log('total percentage ' + totalPercentage);
+                // console.log('item value ' + item._value);
+                // let checkPercent = totalPercentage + Number(item._value);
+                // if (checkPercent > 100){
+                //   alert("Total percentage exceeds 100%");
+                //   return false;}
+                // else
+                {
+                  // console.log('setting item._value ' + item._value);
+                  // totalPercentage += Number(item._value);
+                  // console.log('new total ' + totalPercentage);
+                  item.addText(item._value);
+                  item.setValue('');
+                }
+              }
+              return false;
+            }}
+          >
+            <Form.Item style={itemStyle}>
+              {rows === 1
               ? <Input {...props} aria-label="TextArea Input"/>
               : <TextArea {...props} aria-label="TextArea Input"/>}
-            {showAddButton && (
-              <Form.Item>
-                <Button style={{ marginTop: '10px' }} type="primary" htmlType="submit">
-                    Add
-                </Button>
-              </Form.Item>
-            )}
-          </Form.Item>
-        </Form>
-      )}
+              {showAddButton && (
+                <Form.Item>
+                  <Button style={{ marginTop: '10px' }} type="primary" htmlType="submit">
+                      Add
+                  </Button>
+                </Form.Item>
+              )}
+            </Form.Item>
+          </Form>
+        )}
 
-      {item.regions.length > 0 && (
-        <div style={{ marginBottom: '1em' }}>
-          {item.regions.map(t => (
-            <HtxTextAreaRegion key={t.id} item={t} onFocus={onFocus}/>
-          ))}
-        </div>
-      )}
-    </div>
+        {item.regions.length > 0 && (
+          <div style={{ marginBottom: '1em' }}>
+            {item.regions.map(t => (
+              <HtxTextAreaRegion key={t.id} item={t} onFocus={onFocus}/>
+            ))}
+          </div>
+        )}
+      </div>
+    </td>
   ) : null
   );
+
+
+
+
+  } else {
+
+    return (item.displaymode === PER_REGION_MODES.TAG ? (
+            <div className='lsf-text-area' style={visibleStyle}>
+              {Tree.renderChildren(item, item.annotation)}
+              {item.showSubmit && (
+                  <Form
+                      onFinish={() => {
+                        if (item.allowsubmit && item._value && !item.annotation.isReadOnly()) {
+                          item.addText(item._value);
+                          item.setValue('');
+                        }
+                        return false;
+                      }}
+                  >
+                    <Form.Item style={itemStyle}>
+                      {rows === 1
+                          ? <Input {...props} aria-label="TextArea Input"/>
+                          : <TextArea {...props} aria-label="TextArea Input"/>}
+                      {showAddButton && (
+                          <Form.Item>
+                            <Button style={{marginTop: '10px'}} type="primary" htmlType="submit">
+                              Add
+                            </Button>
+                          </Form.Item>
+                      )}
+                    </Form.Item>
+                  </Form>
+              )}
+              {item.regions.length > 0 && (
+                  <div style={{marginBottom: '1em'}}>
+                    {item.regions.map(t => (
+                        <HtxTextAreaRegion key={t.id} item={t} onFocus={onFocus}/>
+                    ))}
+                  </div>
+              )}
+            </div>
+        ) : null
+    );
+  }
 });
 
 const HtxTextAreaResultLine = forwardRef(({ idx, value, readOnly, onChange, onDelete, onFocus, validate, control, collapsed }, ref) => {
@@ -600,6 +719,7 @@ const HtxTextAreaRegionView = observer(({ item, area, collapsed, setCollapsed, o
     rows: item.rows,
     className: 'is-search',
     label: item.label,
+    valuestyle: item.valuestyle,
     placeholder: item.placeholder,
     autoSize: isTextArea ? { minRows: 1 } : null,
     onChange: ev => {

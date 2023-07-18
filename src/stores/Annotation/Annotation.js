@@ -6,7 +6,7 @@ import { errorBuilder } from '../../core/DataValidator/ConfigValidator';
 import { guidGenerator } from '../../core/Helpers';
 import { Hotkey } from '../../core/Hotkey';
 import TimeTraveller from '../../core/TimeTraveller';
-import Tree, { TRAVERSE_STOP } from '../../core/Tree';
+import Tree, {TRAVERSE_SKIP, TRAVERSE_STOP} from '../../core/Tree';
 import Types from '../../core/Types';
 import Area from '../../regions/Area';
 import Result from '../../regions/Result';
@@ -464,16 +464,24 @@ export const Annotation = types
 
     validate() {
       let ok = true;
+      let ok2 = true;
+      let values = [];
+
+      self.traverseTree(function(node) {
+        values.push(node.getSerializableValue?.());
+      });
 
       self.traverseTree(function(node) {
         ok = node.validate?.();
-        if (ok === false) {
+        ok2 = node.validate_against_all?.(values);
+        console.log('ok: ' + ok + ' ok2: ' + ok2);
+        if (ok === false || ok2 === false) {
+          console.log('TRAVERSE_STOP');
+          // (ok2 ?? true) is needed to continue to fully populate array with cell info
           return TRAVERSE_STOP;
         }
       });
-
-      // should be true or false
-      return ok ?? true;
+      return (ok ?? true) && (ok2 ?? true);
     },
 
     traverseTree(cb) {

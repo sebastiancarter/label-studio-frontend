@@ -53,6 +53,7 @@ const Result = types
       'number',
       'taxonomy',
       'textarea',
+      'textarea2',
       'rating',
       'pairwise',
       'videorectangle',
