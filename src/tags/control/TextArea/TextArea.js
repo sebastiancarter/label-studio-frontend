@@ -148,7 +148,7 @@ const Model = types.model({
   },
 
   get serializableValue() {
-    if (!self.regions.length) return null;
+    if (!self.regions.length) return '0';
     return { text: self.selectedValues() };
   },
 
@@ -447,28 +447,16 @@ const HtxTextArea = observer(({ item }) => {
           <Form
             onFinish={() => {
               if (item.allowsubmit && item._value && !item.annotation.isReadOnly()) {
-                // console.log('total percentage ' + totalPercentage);
-                // console.log('item value ' + item._value);
-                // let checkPercent = totalPercentage + Number(item._value);
-                // if (checkPercent > 100){
-                //   alert("Total percentage exceeds 100%");
-                //   return false;}
-                // else
-                {
-                  // console.log('setting item._value ' + item._value);
-                  // totalPercentage += Number(item._value);
-                  // console.log('new total ' + totalPercentage);
                   item.addText(item._value);
                   item.setValue('');
-                }
               }
               return false;
             }}
           >
             <Form.Item style={itemStyle}>
               {rows === 1
-              ? <Input {...props} aria-label="TextArea Input"/>
-              : <TextArea {...props} aria-label="TextArea Input"/>}
+              ? <Input {...props} aria-label="TextArea Input" placeholder="0"/>
+              : <TextArea {...props} aria-label="TextArea Input" placeholder="0"/>}
               {showAddButton && (
                 <Form.Item>
                   <Button style={{ marginTop: '10px' }} type="primary" htmlType="submit">

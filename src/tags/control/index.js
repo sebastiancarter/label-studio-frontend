@@ -7,7 +7,7 @@ import { RatingModel } from './Rating';
 import { ShortcutModel } from './Shortcut';
 import { TaxonomyModel } from './Taxonomy/Taxonomy';
 import { TextAreaModel } from './TextArea/TextArea';
-import { TextArea2Model } from './TextArea/TextArea2'; // added 7/12
+
 
 import { HyperTextLabelsModel } from './HyperTextLabels';
 import { LabelsModel } from './Labels/Labels';
@@ -42,7 +42,6 @@ export {
   ShortcutModel,
   TaxonomyModel,
   TextAreaModel,
-  TextArea2Model, // added 7/12
 
   HyperTextLabelsModel,
   LabelsModel,
