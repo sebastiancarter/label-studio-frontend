@@ -148,7 +148,7 @@ const Model = types.model({
   },
 
   get serializableValue() {
-    if (!self.regions.length) return '0';
+    if (!self.regions.length) return { text: ['0'] };
     return { text: self.selectedValues() };
   },
 
@@ -180,7 +180,7 @@ const Model = types.model({
     getSerializableValue() {
       const texts = self.regions.map(s => s._value); // added plus 1
 
-      if (texts.length === 0) return;
+      if (texts.length === 0) return { text: ['0'] };
 
       return { text: texts };
     },
@@ -237,8 +237,8 @@ const Model = types.model({
     },
 
     validate_against_all(array) {
-      let valueSum = 0
-      let maxSum = 100
+      let valueSum = 0;
+      let maxSum = 100;
       console.log("validate against others called! with array " + JSON.stringify(array));
       array.forEach(function(value){
         try {
@@ -303,6 +303,8 @@ const Model = types.model({
       if (self._value && self._value.length) {
         self.addText(self._value);
         self._value = '';
+      }else{
+        self.addText('0');
       }
     },
 
@@ -675,6 +677,7 @@ const HtxTextAreaRegionView = observer(({ item, area, collapsed, setCollapsed, o
       item.setValue('');
     } else {
       item.addText(item._value);
+      item.addTextToResult('0', result);
       item.setValue('');
     }
   }, [item, result]);
