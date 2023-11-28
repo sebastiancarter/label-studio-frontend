@@ -242,11 +242,10 @@ const Model = types.model({
       console.log("validate against others called! with array " + JSON.stringify(array));
       array.forEach(function(value){
         try {
+          // points to element 1 because this appends a 0 every time you lock in
+          // a text area by pressing enter
           let textVal = Number(value.text[0]);
-          // this will be fine because validateValue is already called on the user input
-          // this should just catch the table array and prevent it from being summed
-          console.log('value text ' + value.text);
-          console.log('textval ' + textVal);
+          // this is error correction for if textVal is set to NaN
           if (!isNaN(textVal)) {
             valueSum += textVal;
             console.log('currSum ' + valueSum);
