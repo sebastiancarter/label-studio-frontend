@@ -148,7 +148,7 @@ const Model = types.model({
   },
 
   get serializableValue() {
-    if (!self.regions.length) return '0';
+    if (!self.regions.length) return { text: ['0'] };
     return { text: self.selectedValues() };
   },
 
@@ -180,7 +180,7 @@ const Model = types.model({
     getSerializableValue() {
       const texts = self.regions.map(s => s._value); // added plus 1
 
-      if (texts.length === 0) return;
+      if (texts.length === 0) return { text: ['0'] };
 
       return { text: texts };
     },
@@ -237,14 +237,20 @@ const Model = types.model({
     },
 
     validate_against_all(array) {
-      let valueSum = 0
-      let maxSum = 100
+      let valueSum = 0;
+      let maxSum = 100;
       console.log("validate against others called! with array " + JSON.stringify(array));
       array.forEach(function(value){
         try {
-          let textVal = Number(value.text);
-          valueSum += textVal
+          let textVal = Number(value.text[0]);
+          // this will be fine because validateValue is already called on the user input
+          // this should just catch the table array and prevent it from being summed
           console.log('value text ' + value.text);
+          console.log('textval ' + textVal);
+          if (!isNaN(textVal)) {
+            valueSum += textVal;
+            console.log('currSum ' + valueSum);
+          }
         }
         catch(TypeError){
             console.log('No value found');
@@ -269,10 +275,10 @@ const Model = types.model({
       if (isNaN(checkPercent)){
         alert("Only submit numeric values.");
         return false;}
-      if (checkPercent > 100){
+      else if (checkPercent > 100){
         alert("Individual percent exceeds 100%.");
         return false;}
-      if (checkPercent < 0){
+      else if (checkPercent < 0){
         alert("Only enter positive values.");
         return false;}
 
@@ -303,6 +309,8 @@ const Model = types.model({
       if (self._value && self._value.length) {
         self.addText(self._value);
         self._value = '';
+      }else{
+        self.addText('0');
       }
     },
 
@@ -674,7 +682,9 @@ const HtxTextAreaRegionView = observer(({ item, area, collapsed, setCollapsed, o
       item.addTextToResult(item._value, result);
       item.setValue('');
     } else {
+      // TODO fix this so its not so broken anymore lol
       item.addText(item._value);
+      item.addTextToResult('0', result);
       item.setValue('');
     }
   }, [item, result]);
