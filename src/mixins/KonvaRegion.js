@@ -97,6 +97,7 @@ export const KonvaRegionMixin = types.model({})
       },
 
       onClickRegion(e) {
+        console.log('onclickRegion in konva');
         const annotation = self.annotation;
         const ev = e?.evt || e;
         const additiveMode = ev?.ctrlKey || ev?.metaKey;
