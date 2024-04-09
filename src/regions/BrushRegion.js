@@ -652,6 +652,7 @@ const HtxBrushView = ({ item }) => {
             }
           }}
           onClick={e => {
+            console.log('onClick happens here');
             if (item.parent.getSkipInteractions()) return;
             if (store.annotationStore.selected.relationMode) {
               item.onClickRegion(e);

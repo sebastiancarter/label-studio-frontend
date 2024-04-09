@@ -1,16 +1,16 @@
-import React from 'react';
 import { observer } from 'mobx-react';
 import { types } from 'mobx-state-tree';
-
-import BaseTool from './Base';
+import React from 'react';
+import { Range } from '../common/Range/Range';
+import { NodeViews } from '../components/Node/Node';
+import { Tool } from '../components/Toolbar/Tool';
+import { DrawingTool } from '../mixins/DrawingTool';
 import ToolMixin from '../mixins/Tool';
 import Canvas from '../utils/canvas';
-import { clamp, findClosestParent } from '../utils/utilities';
-import { DrawingTool } from '../mixins/DrawingTool';
-import { Tool } from '../components/Toolbar/Tool';
-import { Range } from '../common/Range/Range'; 
-import { NodeViews } from '../components/Node/Node';
 import { FF_DEV_3666, FF_DEV_4081, isFF } from '../utils/feature-flags';
+import { clamp, findClosestParent } from '../utils/utilities';
+
+import BaseTool from './Base';
 
 const MIN_SIZE = 1;
 const MAX_SIZE = 50;
@@ -173,6 +173,7 @@ const _Tool = types
       },
 
       mousedownEv(ev, _, [x, y]) {
+        console.log('mouse is down');
         if (
           !findClosestParent(
             ev.target,

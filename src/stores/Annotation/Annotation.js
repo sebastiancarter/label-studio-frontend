@@ -165,7 +165,8 @@ export const Annotation = types
           ? tag => tag.isObjectTag
           : tag => !tag.toname,
       );
-    },
+    }
+    ,
 
     get regions() {
       return Array.from(self.areas.values());

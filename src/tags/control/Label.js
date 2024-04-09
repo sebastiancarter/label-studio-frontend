@@ -117,21 +117,26 @@ const Model = types.model({
     // here we check if you click on label from labels group
     // connected to the region on the same object tag that is
     // right now highlighted, and if that region is readonly
-
+    console.log('toggle selected');
+    self.annotation.unselectAll();
+    console.log(self.annotation.selectedRegions.length);
     if (self.annotation.selectedDrawingRegions.length > 0) {
       /*  here we are validating if we are drawing a new region or if region is already closed
           the way that new drawing region and a finished regions work is similar, but new drawing region
           doesn't visualy select the polygons when you are drawing.
        */
+      console.log('if');
       sameObjectSelectedRegions = self.annotation.selectedDrawingRegions.filter(region => {
         return region.parent?.name === self.parent?.toname;
       });
     } else if (self.annotation.selectedRegions.length > 0) {
+      console.log('else if');
       sameObjectSelectedRegions = self.annotation.selectedRegions.filter(region => {
         return region.parent?.name === self.parent?.toname;
       });
     }
 
+    //sameObjectSelectedRegions = [];
 
     const affectedRegions = sameObjectSelectedRegions.filter(region => {
       return !region.isReadOnly();
@@ -159,10 +164,12 @@ const Model = types.model({
         self.selected &&
         region.labelings.length === 1 &&
         (!self.parent?.allowempty || self.isEmpty)
-      )
+      ) {
         return false;
+      }
       if (self.parent?.type !== 'labels' && !self.parent?.type.includes(region.results[0].type)) return false;
       return true;
+      console.log('applicableRegions');
     });
 
     if (sameObjectSelectedRegions.length > 0 && applicableRegions.length === 0) return;
@@ -170,7 +177,7 @@ const Model = types.model({
     // if we are going to select label and it would be the first in this labels group
     if (!labels.selectedLabels.length && !self.selected) {
       // unselect labels from other groups of labels connected to this obj
-
+      console.log("looks promising")
       self.annotation.toNames.get(labels.toname).
         filter(tag => tag.type && tag.type.endsWith('labels') && tag.name !== labels.name);
 
